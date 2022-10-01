@@ -1,0 +1,17 @@
+freebsd_instance:
+  image_family: freebsd-13-1
+
+task:
+  only_if: $CIRRUS_BRANCH == 'master' || $CIRRUS_BRANCH == 'freebsd-cirrus-ci'
+
+  presetup_script:
+    - sed -i -e 's/quarterly/latest/' /etc/pkg/FreeBSD.conf
+    - pkg update 
+
+  pkg_install_script: pkg install -y qt6-base qt6-tools vulkan-headers cmake git ninja llvm14
+
+  setup_script:
+    - cmake -GNinja -B Build -DCMAKE_C_COMPILER=clang14  -DCMAKE_CXX_COMPILER=clang++14
+
+  compile_script:  
+    - cmake --build Build
